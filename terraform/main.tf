@@ -28,7 +28,6 @@ module "ec2" {
   app_name              = var.app_name
   ami_id                = data.aws_ami.amazon_linux_2.id
   instance_type         = "t3.micro"
-  key_name              = var.key_name
   subnet_id             = element(module.vpc.subnet_ids, 0)
   security_group_ids    = [module.vpc.security_group_id]
   user_data             = var.user_data
