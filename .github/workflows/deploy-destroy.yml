@@ -1,8 +1,16 @@
-name: Deploy Ephemeral Environment
+name: Deploy or Destroy Ephemeral Environment
 
 on:
   workflow_dispatch:
     inputs:
+      action_type:
+        description: 'Select Action (deploy or destroy)'
+        required: true
+        default: 'deploy'
+        type: choice
+        options:
+          - deploy
+          - destroy
       repo:
         description: 'GitHub Application Repository URL'
         required: true
@@ -11,10 +19,10 @@ on:
         required: true
       email:
         description: 'Notification Email'
-        required: true
+        required: false
 
 jobs:
-  deploy:
+  run:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,21 +36,22 @@ jobs:
           sudo ./aws/install --update
           aws --version
 
-
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
-
-      - name: Install dependencies
-        run: sudo apt-get install -y python3 python3-pip git unzip
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ap-south-1
 
-      - name: Deploy Application
+      - name: Run Terraform Action
         run: |
-          chmod +x deploy.sh
-          ./deploy.sh ${{ github.event.inputs.repo }} ${{ github.event.inputs.branch }} ${{ github.event.inputs.email }}
+          chmod +x deploy.sh destroy.sh
+
+          if [ "${{ github.event.inputs.action_type }}" == "deploy" ]; then
+            ./deploy.sh "${{ github.event.inputs.repo }}" "${{ github.event.inputs.branch }}" "${{ github.event.inputs.email }}"
+          else
+            ./destroy.sh
+          fi
