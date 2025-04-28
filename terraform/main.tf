@@ -45,7 +45,3 @@ module "alb" {
 #   alb_dns_name   = module.alb.alb_dns_name
 #   alb_zone_id    = module.alb.alb_zone_id
 # }
-
-output "app_url" {
-  value = module.route53.app_url
-}
