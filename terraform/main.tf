@@ -13,35 +13,33 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 module "vpc" {
-  source = "./modules/vpc"
+  source = "../modules/vpc"
   name   = var.app_name
   region = "ap-south-1"
 }
 
+module "iam" {
+  source = "../modules/iam"
+  app_name = var.app_name
+}
+
 module "ec2" {
-  source              = "./modules/ec2"
-  app_name            = var.app_name
-  ami_id              = data.aws_ami.amazon_linux_2.id
-  instance_type       = "t3.micro"
-  subnet_id           = element(module.vpc.subnet_ids, 0)
-  security_group_ids  = [module.vpc.security_group_id]
-  key_name            = var.key_name
-  user_data           = var.user_data
+  source                = "../modules/ec2"
+  app_name              = var.app_name
+  ami_id                = data.aws_ami.amazon_linux_2.id
+  instance_type         = "t3.micro"
+  key_name              = var.key_name
+  subnet_id             = element(module.vpc.subnet_ids, 0)
+  security_group_ids    = [module.vpc.security_group_id]
+  user_data             = var.user_data
+  iam_instance_profile  = module.iam.ec2_instance_profile_name
 }
 
 module "alb" {
-  source            = "./modules/alb"
+  source            = "../modules/alb"
   app_name          = var.app_name
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.subnet_ids
   security_group_id = module.vpc.security_group_id
   target_id         = module.ec2.instance_id
 }
-
-# module "route53" {
-#   source         = "./modules/route53"
-#   app_name       = var.app_name
-#   hosted_zone_id = var.hosted_zone_id
-#   alb_dns_name   = module.alb.alb_dns_name
-#   alb_zone_id    = module.alb.alb_zone_id
-# }
