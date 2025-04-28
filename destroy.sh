@@ -4,6 +4,7 @@ set -e
 
 echo "💥 Destroying infrastructure..."
 cd terraform
+terraform init
 terraform destroy -auto-approve
 echo "✅ Infrastructure destroyed."
 

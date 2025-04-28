@@ -37,6 +37,7 @@ cat <<EOF > userdata.sh
 #!/bin/bash
 yum update -y
 yum install -y python3 python3-pip git
+python3 -m pip install --upgrade pip
 cd /home/ec2-user
 git clone $REPO_URL
 cd $REPO_NAME
