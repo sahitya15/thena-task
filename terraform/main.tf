@@ -13,18 +13,18 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 module "vpc" {
-  source = "../modules/vpc"
+  source = "./modules/vpc"
   name   = var.app_name
   region = "ap-south-1"
 }
 
 module "iam" {
-  source = "../modules/iam"
+  source = "./modules/iam"
   app_name = var.app_name
 }
 
 module "ec2" {
-  source                = "../modules/ec2"
+  source                = "./modules/ec2"
   app_name              = var.app_name
   ami_id                = data.aws_ami.amazon_linux_2.id
   instance_type         = "t3.micro"
@@ -36,7 +36,7 @@ module "ec2" {
 }
 
 module "alb" {
-  source            = "../modules/alb"
+  source            = "./modules/alb"
   app_name          = var.app_name
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.subnet_ids
