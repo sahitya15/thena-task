@@ -53,7 +53,11 @@ export TF_VAR_user_data="$(cat userdata.sh)"
 # Terraform Apply
 echo "⏳ Running Terraform to deploy infrastructure..."
 cd terraform
-terraform init
+terraform init \
+  -backend-config="bucket=thena-task-bucket" \
+  -backend-config="key=ephemeral-environments/${APP_NAME}/terraform.tfstate" \
+  -backend-config="region=ap-south-1" \
+  -backend-config="encrypt=true"
 terraform apply -auto-approve
 
 APP_URL=$(terraform output -raw app_url)

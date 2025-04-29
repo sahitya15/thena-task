@@ -4,7 +4,11 @@ set -e
 
 echo "💥 Destroying infrastructure..."
 cd terraform
-terraform init
+terraform init \
+  -backend-config="bucket=thena-task-bucket" \
+  -backend-config="key=ephemeral-environments/${APP_NAME}/terraform.tfstate" \
+  -backend-config="region=ap-south-1" \
+  -backend-config="encrypt=true"
 terraform destroy -auto-approve
 echo "✅ Infrastructure destroyed."
 
