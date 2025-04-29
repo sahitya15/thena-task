@@ -56,7 +56,7 @@ cd terraform
 terraform init \
   -backend-config="bucket=thena-task-bucket" \
   -backend-config="key=ephemeral-environments${APP_NAME}/terraform.tfstate" \
-  -backend-config="region=ap-south-1" \
+  -backend-config="region=us-east-1" \
   -backend-config="encrypt=true"
 terraform apply -auto-approve
 
