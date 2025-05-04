@@ -1,0 +1,38 @@
+name: Destroy Ephemeral Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: 'App Name (same as used in deploy)'
+        required: true
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Infra Repo
+        uses: actions/checkout@v3
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -q awscliv2.zip
+          sudo ./aws/install --update
+          aws --version
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Destroy Environment
+        run: |
+          chmod +x destroy.sh
+          ./destroy.sh "${{ github.event.inputs.app_name }}"
