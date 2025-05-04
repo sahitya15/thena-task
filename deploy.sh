@@ -33,20 +33,17 @@ aws sns subscribe --topic-arn "$SNS_TOPIC_ARN" --protocol email --notification-e
 # (User must confirm email once)
 
 # Prepare User Data
-cat <<"EOF" > userdata.sh
+cat <<EOF > userdata.sh
 #!/bin/bash
 yum update -y
 yum install -y python3 python3-pip git gcc
 python3 -m pip install --upgrade pip
 pip3 install Flask
-
 cd /home/ec2-user
-git clone "$REPO_URL"
-cd "$REPO_NAME"
-git checkout "$BRANCH_NAME"
-
+git clone $REPO_URL
+cd $REPO_NAME
+git checkout $BRANCH_NAME
 pip3 install -r requirements.txt
-
 sudo python3 run.py &
 EOF
 
